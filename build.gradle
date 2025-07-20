@@ -42,3 +42,22 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+bootRun {
+    systemProperty 'spring.devtools.restart.enabled', 'false'
+    systemProperty 'spring.devtools.livereload.enabled', 'false'
+    systemProperty 'spring.sqlite.init.mode', 'never'
+
+    // Add these critical settings:
+    finalizedBy 'stopBootRun'  // Ensures clean termination
+    doNotTrackState("BootRun state tracking causes issues")
+}
+
+// Add this new task to ensure clean shutdown
+tasks.register('stopBootRun') {
+    doLast {
+        if (bootRun.process != null) {
+            bootRun.process.destroy()
+        }
+    }
+}
